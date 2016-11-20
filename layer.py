@@ -31,7 +31,7 @@ class Layer(object):
         assert(len(self._init_weights.T) == self._nodes[1])
         assert(len(self._bias) == self._nodes[1])
         self._state = np.zeros(self._nodes[1]) 
-        self._bias_weights = np.random.rand(self._nodes[1])
+        self._bias_weights = np.ones(self._nodes[1])
         self._weights = self._init_weights
 
     def __call__(self):
