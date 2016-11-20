@@ -34,7 +34,7 @@ class Network(object):
             x = l.forward(x)
         return x
 
-    def backpropogation(self, inputs, output,  targets, learning_rate=0.0002):
+    def backpropogation(self, inputs, outputs,  targets, learning_rate=0.00008):
         # reverse layers
         layers_rev = self._layers[::-1]
         assert(layers_rev[0].nodes[1] == len(targets)),\
@@ -44,7 +44,7 @@ class Network(object):
         
         #y = self.feed_forward(inputs)
         # err_grad wrt output
-        de_dy = self.cost.grad(targets, output, ax=0, K =-0.5)
+        de_dy = self.cost.grad(targets, outputs, ax=0, K =-0.5)
         for index, l_current  in enumerate(layers_rev):
 
             # output_grad wrt input
@@ -59,10 +59,11 @@ class Network(object):
             else:
                 dz_dw = inputs
             # err_grad wrt weights
-            if(len(de_dz.shape) == 1 and len(dz_dw.shape) == 1):
+            if(len(inputs.shape) == 1 and len(inputs.shape) == 1):
                 de_dw = np.outer(dz_dw, de_dz)
             else:
                 de_dw = np.dot(dz_dw, de_dz.T)
+
 
     
             #print(" wieghts", l_current.weights)
@@ -70,8 +71,9 @@ class Network(object):
             # update weights
             l_current.weights = l_current.weights - learning_rate * de_dw
 
-            #print("updated wieghts", l_current.weights)
-            
+            #bias_weights update
+            b_grad = np.sum(de_dz,1)
+            l_current.bias_weights = l_current.bias_weights - learning_rate * b_grad
             # err_grad wrt output of previous layer
 
             de_dy = np.dot(l_current.weights, de_dz)
@@ -93,19 +95,19 @@ class Network(object):
 if __name__ == "__main__":
     from layer import Layer
 
-    l1 = Layer([3, 5], neuron_type="linear")
-    l2 = Layer([5, 4], neuron_type="linear")
+    l1 = Layer([3, 4], neuron_type="linear")
+    l2 = Layer([5, 5], neuron_type="linear")
     l3 = Layer([4, 2], neuron_type="linear")
 
-    net = Network([l1, l2, l3])
+    net = Network([l1, l3])
     x = np.asarray([1, 2, 3])
     t = np.asarray([3,5])
-    x = np.asarray([[1, 2, 3],[ 3, 4 ,5] , [1,3,4], [3,5,6] ] ).T
-    t = np.asarray([[3,5],[7,9],[4,7],[8,11]] ).T
+    x = np.asarray([[3, 1, 2],[ 3, 2 ,5] , [6,3,4], [1,5,6], [9,3,6 ]] ).T
+    t = np.asarray([[4,3],[5,7],[9,7],[6,11],[12,9]] ).T
  
     #print(t.shape)
-    net.train(x,t, epochs =10 )
-    print(net.feed_forward(x))
+    net.train(x,t, epochs =20 )
+    #print(net.feed_forward(x))
     print(net.feed_forward(np.asarray([1,5,7])))
     
     # batch input
