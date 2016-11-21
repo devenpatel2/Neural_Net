@@ -34,7 +34,7 @@ class Network(object):
             x = l.forward(x)
         return x
 
-    def backpropogation(self, inputs, outputs,  targets, learning_rate=0.00008):
+    def backpropogation(self, inputs, outputs,  targets, learning_rate=0.0003):
         # reverse layers
         layers_rev = self._layers[::-1]
         assert(layers_rev[0].nodes[1] == len(targets)),\
@@ -61,19 +61,18 @@ class Network(object):
             # err_grad wrt weights
             if(len(inputs.shape) == 1 and len(inputs.shape) == 1):
                 de_dw = np.outer(dz_dw, de_dz)
+                de_db = np.dot(l_current.bias, de_dz)
             else:
                 de_dw = np.dot(dz_dw, de_dz.T)
-
-
-    
+                de_db = np.dot(l_current.bias, np.sum(de_dz,1))
+        
             #print(" wieghts", l_current.weights)
             
             # update weights
             l_current.weights = l_current.weights - learning_rate * de_dw
 
             #bias_weights update
-            b_grad = np.sum(de_dz,1)
-            l_current.bias_weights = l_current.bias_weights - learning_rate * b_grad
+            l_current.bias_weights = l_current.bias_weights - learning_rate * de_db
             # err_grad wrt output of previous layer
 
             de_dy = np.dot(l_current.weights, de_dz)
@@ -100,10 +99,10 @@ if __name__ == "__main__":
     l3 = Layer([4, 2], neuron_type="linear")
 
     net = Network([l1, l3])
-    x = np.asarray([1, 2, 3])
-    t = np.asarray([3,5])
-    x = np.asarray([[3, 1, 2],[ 3, 2 ,5] , [6,3,4], [1,5,6], [9,3,6 ]] ).T
-    t = np.asarray([[4,3],[5,7],[9,7],[6,11],[12,9]] ).T
+    #x = np.asarray([1, 2, 3])
+    #t = np.asarray([3,5])
+    x = np.asarray([[3, 1, 2],[ 3, 2 ,5] , [6,3,4], [1,5,6], [9,3,6 ] ,[3,6,1]] ).T
+    t = np.asarray([[4,3],[5,7],[9,7],[6,11],[12,9],[9,7]] ).T
  
     #print(t.shape)
     net.train(x,t, epochs =20 )
