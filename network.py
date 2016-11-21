@@ -59,7 +59,7 @@ class Network(object):
             else:
                 dz_dw = inputs
             # err_grad wrt weights
-            if(len(inputs.shape) == 1 and len(inputs.shape) == 1):
+            if(len(inputs.shape) == 1): 
                 de_dw = np.outer(dz_dw, de_dz)
                 de_db = np.dot(l_current.bias, de_dz)
             else:
@@ -94,9 +94,9 @@ class Network(object):
 if __name__ == "__main__":
     from layer import Layer
 
-    l1 = Layer([3, 4], neuron_type="linear")
-    l2 = Layer([5, 5], neuron_type="linear")
-    l3 = Layer([4, 2], neuron_type="linear")
+    l1 = Layer([3, 4], neuron_type="logistic")
+    l2 = Layer([5, 5], neuron_type="logistic")
+    l3 = Layer([4, 2], neuron_type="logistic")
 
     net = Network([l1, l3])
     #x = np.asarray([1, 2, 3])
